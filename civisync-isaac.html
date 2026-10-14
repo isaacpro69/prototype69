@@ -1,0 +1,1098 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CiviSync</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600;6..72,700&display=swap" rel="stylesheet">
+<style>
+/* ---------- Design tokens ---------- */
+:root{
+  --ink:#0F1B3A; --ink-2:#17284F;
+  --cobalt:#2B4ACB; --cobalt-600:#2340B3; --cobalt-50:#EEF2FF;
+  --gold:#C29A36;
+  --bg:#F3F5FB; --paper:#FFFFFF;
+  --line:#DFE4F1; --line-2:#EBEFF8;
+  --text:#121A33; --muted:#5E6A8A; --faint:#8A94B0;
+  --ok:#1B7A52; --ok-bg:#E6F5EE; --bad:#B53131; --bad-bg:#FCECEC;
+  --r-sm:8px; --r-md:12px; --r-lg:18px; --r-xl:26px;
+  --shadow-1:0 1px 2px rgba(15,27,58,.05),0 0 0 1px rgba(15,27,58,.02);
+  --shadow-2:0 14px 32px -14px rgba(15,27,58,.28),0 2px 6px rgba(15,27,58,.06);
+  --shadow-3:0 40px 90px -24px rgba(10,18,42,.55);
+  --font-ui:'Figtree',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --font-serif:'Newsreader',Georgia,'Times New Roman',serif;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;font-family:var(--font-ui);font-size:15px;line-height:1.5;color:var(--text);background:var(--bg);-webkit-font-smoothing:antialiased}
+h1,h2,h3,p,dl,dd{margin:0}
+button,input,select,textarea{font:inherit;color:inherit}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:2px solid var(--cobalt);outline-offset:2px;border-radius:6px}
+.muted{color:var(--muted)}
+[hidden]{display:none!important}
+
+/* ---------- Buttons & fields ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:40px;padding:0 16px;border-radius:var(--r-md);border:1px solid var(--line);background:#fff;font-weight:600;font-size:14px;cursor:pointer;white-space:nowrap;transition:background .15s,border-color .15s,box-shadow .15s}
+.btn:hover{background:#F6F8FF;border-color:#C6CFE8}
+.btn-primary{background:var(--cobalt);border-color:var(--cobalt);color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.22),0 8px 16px -8px rgba(43,74,203,.7)}
+.btn-primary:hover{background:var(--cobalt-600);border-color:var(--cobalt-600)}
+.btn-light{background:#fff;color:var(--ink);border-color:#fff}
+.btn-light:hover{background:#EEF2FF;border-color:#EEF2FF}
+.btn-outline-light{background:transparent;color:#fff;border-color:rgba(255,255,255,.35)}
+.btn-outline-light:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.6)}
+.btn-danger{background:var(--bad);border-color:var(--bad);color:#fff}
+.btn-danger:hover{background:#992727;border-color:#992727}
+.btn-block{width:100%;height:44px}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
+.icon-btn{width:34px;height:34px;display:inline-grid;place-items:center;border-radius:10px;border:0;background:transparent;color:var(--muted);cursor:pointer;transition:background .15s,color .15s}
+.icon-btn:hover{background:var(--cobalt-50);color:var(--cobalt)}
+.icon-btn.danger:hover{background:var(--bad-bg);color:var(--bad)}
+.field{display:grid;gap:6px;min-width:0}
+.field>label,.field>.lbl{font-size:13px;font-weight:600;color:#2A3558}
+.input,.select{height:42px;width:100%;padding:0 12px;border:1px solid var(--line);border-radius:var(--r-md);background:#fff;transition:border-color .15s,box-shadow .15s}
+.input:hover,.select:hover{border-color:#C3CCE6}
+.input:focus,.select:focus{outline:none;border-color:var(--cobalt);box-shadow:0 0 0 4px rgba(43,74,203,.15)}
+.hint{font-size:12.5px;color:var(--muted)}
+.form-error{padding:10px 12px;border-radius:var(--r-md);background:var(--bad-bg);color:var(--bad);font-size:13.5px;font-weight:500}
+.check{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:var(--r-md);cursor:pointer;font-size:14px;font-weight:500;transition:border-color .15s,background .15s}
+.check:hover{border-color:#C3CCE6}
+.check input{width:16px;height:16px;accent-color:var(--cobalt)}
+.check:has(input:checked){border-color:var(--cobalt);background:var(--cobalt-50)}
+
+/* ---------- Brand marks ---------- */
+.logo-box{--s:44px;width:var(--s);height:var(--s);flex:none;display:grid;place-items:center}
+.logo-img{width:100%;height:100%;object-fit:contain}
+.logo-fallback{width:100%;height:100%;border-radius:50%;display:grid;place-items:center;background:linear-gradient(145deg,#4A68E8,#1E3290);color:#fff;font-family:var(--font-serif);font-weight:600;font-size:calc(var(--s)*.5);box-shadow:inset 0 0 0 2px rgba(255,255,255,.35),0 0 0 2px var(--gold)}
+.contours{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.contours.draw path{stroke-dasharray:1;stroke-dashoffset:1;animation:trace 2.6s cubic-bezier(.2,.7,.2,1) forwards;animation-delay:calc(var(--i)*70ms)}
+@keyframes trace{to{stroke-dashoffset:0}}
+
+/* ---------- Login ---------- */
+.login{min-height:100vh;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr)}
+.login-art{position:relative;overflow:hidden;color:#fff;padding:48px 56px;display:flex;flex-direction:column;justify-content:space-between;background:radial-gradient(120% 120% at 0% 0%,#26418F 0%,#122252 45%,#0A1330 100%)}
+.login-art>*:not(.contours){position:relative}
+.wordmark{font-weight:700;font-size:17px;letter-spacing:.01em;color:#CFD9FF}
+.art-main{display:grid;gap:14px;max-width:520px}
+.art-main h1{font-family:var(--font-serif);font-weight:600;font-size:clamp(36px,4.4vw,58px);line-height:1.03;letter-spacing:-.01em}
+.art-main .place{font-size:17px;color:#B9C7F5}
+.art-main .tag{font-size:15px;color:#8FA0D6;max-width:38ch}
+.login-form-wrap{display:grid;place-items:center;padding:40px 24px;background:#fff}
+.login-form{width:min(380px,100%);display:grid;gap:18px}
+.login-form h2{font-family:var(--font-serif);font-size:34px;font-weight:600;letter-spacing:-.01em}
+.pw{position:relative}
+.pw .input{padding-right:46px}
+.pw .icon-btn{position:absolute;right:4px;top:4px}
+
+/* ---------- Shell ---------- */
+.shell{display:grid;grid-template-columns:272px minmax(0,1fr);min-height:100vh}
+.side{position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:26px;padding:22px 16px;color:#B7C3EA;background:linear-gradient(180deg,#0F1B3A,#0A1330)}
+.brand{display:flex;align-items:center;gap:12px;padding:4px 8px}
+.brand-name{font-family:var(--font-serif);font-size:18px;line-height:1.2;font-weight:600;color:#fff}
+.brand-sub{font-size:12.5px;color:#8FA0D6}
+.nav{display:grid;gap:4px}
+.nav a{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:12px;font-weight:500;transition:background .15s,color .15s}
+.nav a:hover{background:rgba(255,255,255,.06);color:#fff}
+.nav a[aria-current=page]{background:rgba(255,255,255,.1);color:#fff;box-shadow:inset 3px 0 0 var(--gold)}
+.side-foot{margin-top:auto;display:grid;gap:10px}
+.me{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:14px;background:rgba(255,255,255,.06)}
+.me b{display:block;color:#fff;font-size:14px}
+.me small{color:#8FA0D6;font-size:12.5px}
+.btn-ghost-dark{background:transparent;border-color:rgba(255,255,255,.16);color:#C9D4F5;height:38px}
+.btn-ghost-dark:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.3)}
+.avatar{width:38px;height:38px;flex:none;display:grid;place-items:center;border-radius:50%;background:var(--cobalt-50);color:var(--cobalt);font-weight:700;font-size:13px}
+.avatar.sm{width:32px;height:32px;background:rgba(255,255,255,.14);color:#fff}
+.content{min-width:0}
+.topbar{display:none}
+.scrim{display:none}
+.main{padding:32px clamp(18px,3vw,44px) 72px;max-width:1260px}
+.page-head{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:16px;margin-bottom:22px}
+.page-head h1{font-family:var(--font-serif);font-size:32px;font-weight:600;letter-spacing:-.01em;line-height:1.15}
+
+/* ---------- Panels, tables ---------- */
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow-1)}
+.panel-head{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:18px 20px;border-bottom:1px solid var(--line-2)}
+.panel-head h2{font-size:16px;font-weight:700}
+.panel-body{padding:20px}
+.toolbar{display:flex;gap:12px;flex-wrap:wrap;padding:16px 20px;border-bottom:1px solid var(--line-2)}
+.search{position:relative;flex:1 1 260px}
+.search svg{position:absolute;left:12px;top:12px;color:var(--faint)}
+.search .input{padding-left:38px}
+.toolbar .select{width:190px}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+th{padding:12px 16px;text-align:left;font-size:12.5px;font-weight:600;color:var(--muted);background:#F8FAFE;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:14px 16px;border-bottom:1px solid var(--line-2);vertical-align:middle}
+tbody tr:last-child td{border-bottom:0}
+tbody tr:hover{background:#FAFBFF}
+.who{display:flex;align-items:center;gap:12px;min-width:200px}
+.who strong{display:block;font-weight:600}
+.who small{color:var(--muted);font-size:12.5px}
+.actions{white-space:nowrap;text-align:right}
+.ref{font-variant-numeric:tabular-nums;font-weight:600;color:var(--cobalt)}
+.chip{display:inline-flex;align-items:center;height:24px;padding:0 10px;margin:2px 4px 2px 0;border-radius:999px;font-size:12px;font-weight:600;background:var(--cobalt-50);color:var(--cobalt);white-space:nowrap}
+.chip-senior{background:#FFF3D6;color:#85600F}
+.chip-pwd{background:#E6F0FF;color:#1D4DA6}
+.chip-solo{background:#F2E8FF;color:#6537AE}
+.chip-fourps{background:var(--ok-bg);color:var(--ok)}
+.chip-indigent{background:var(--bad-bg);color:var(--bad)}
+.empty{display:grid;justify-items:center;gap:14px;padding:44px 20px;text-align:center;color:var(--muted)}
+.empty .row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+
+/* ---------- Dashboard ---------- */
+.hero{position:relative;overflow:hidden;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:24px;padding:30px 34px;border-radius:var(--r-xl);color:#fff;background:radial-gradient(130% 150% at 0% 0%,#26418F 0%,#122252 50%,#0A1330 100%);box-shadow:var(--shadow-2)}
+.hero>*:not(.contours){position:relative}
+.hero-id{display:flex;align-items:center;gap:20px}
+.hero-date{font-size:13.5px;color:#9FB0E8;margin-bottom:4px}
+.hero h1{font-family:var(--font-serif);font-size:clamp(28px,3.4vw,40px);font-weight:600;line-height:1.08;letter-spacing:-.01em}
+.hero-sub{color:#B9C7F5;margin-top:6px;font-size:15px}
+.hero-actions{display:flex;gap:10px;flex-wrap:wrap}
+.figures{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));margin:22px 0;background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow-1)}
+.fig{padding:20px 24px;border-left:1px solid var(--line-2)}
+.fig:first-child{border-left:0}
+.fig b{display:block;font-family:var(--font-serif);font-size:38px;font-weight:600;letter-spacing:-.02em;line-height:1.1;font-variant-numeric:tabular-nums}
+.fig span{color:var(--muted);font-size:13.5px}
+.grid-2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:20px}
+.bar-row{display:grid;grid-template-columns:minmax(80px,120px) 1fr 34px;gap:12px;align-items:center;padding:8px 0;font-size:14px}
+.bar-row .n{text-align:right;font-weight:600;font-variant-numeric:tabular-nums}
+.track{height:10px;border-radius:999px;background:#EDF1FA;overflow:hidden}
+.fill{height:100%;border-radius:999px;background:linear-gradient(90deg,#2B4ACB,#6683F3)}
+.list-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line-2)}
+.list-row:last-child{border-bottom:0}
+.list-row strong{display:block;font-weight:600}
+.list-row small{color:var(--muted);font-size:12.5px}
+
+/* ---------- Certificates page ---------- */
+.cert-layout{display:grid;grid-template-columns:minmax(0,430px) minmax(0,1fr);gap:20px;align-items:start}
+.stack{display:grid;gap:18px}
+.type-grid{display:grid;gap:8px}
+.type-tile{position:relative;display:block}
+.type-tile input{position:absolute;opacity:0;pointer-events:none}
+.type-tile span{display:block;padding:12px 14px;border:1px solid var(--line);border-radius:var(--r-md);cursor:pointer;transition:border-color .15s,background .15s,box-shadow .15s}
+.type-tile span:hover{border-color:#C3CCE6}
+.type-tile strong{display:block;font-size:14px}
+.type-tile small{color:var(--muted);font-size:12.5px}
+.type-tile input:checked+span{border-color:var(--cobalt);background:var(--cobalt-50);box-shadow:0 0 0 3px rgba(43,74,203,.12)}
+.type-tile input:focus-visible+span{outline:2px solid var(--cobalt);outline-offset:2px}
+.pick-list{display:grid;gap:4px;margin-top:8px}
+.pick-item{display:flex;align-items:center;gap:12px;padding:8px 10px;border:1px solid transparent;border-radius:var(--r-md);background:transparent;text-align:left;cursor:pointer;width:100%}
+.pick-item:hover{background:var(--cobalt-50);border-color:#D5DEFA}
+.pick-item strong{display:block;font-weight:600;font-size:14px}
+.pick-item small{color:var(--muted);font-size:12.5px}
+.picked{display:flex;align-items:center;gap:12px;padding:12px;border:1px solid #C9D5FA;background:var(--cobalt-50);border-radius:var(--r-md)}
+.picked>div{flex:1;min-width:0}
+.picked strong{display:block}
+.picked small{color:var(--muted)}
+.result{display:flex;gap:14px;padding:18px;border-radius:var(--r-lg);margin-top:18px}
+.result.ok{background:var(--ok-bg);color:#14583B}
+.result.bad{background:var(--bad-bg);color:#8E2525}
+.result strong{display:block;font-size:16px}
+.result dl{display:grid;grid-template-columns:auto 1fr;gap:4px 16px;margin-top:10px;font-size:14px}
+.result dt{opacity:.75}
+.result dd{font-weight:600}
+
+/* ---------- Settings ---------- */
+.settings-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,380px);gap:20px;align-items:start}
+.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.form-grid .span-2{grid-column:1/-1}
+.logo-row{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.logo-well{width:84px;height:84px;display:grid;place-items:center;border:1px dashed #B9C5E6;border-radius:var(--r-lg);background:#F8FAFF}
+.lh{display:grid;justify-items:center;gap:10px;padding:26px 18px;text-align:center;border:1px solid var(--line);border-radius:var(--r-lg);background:#fff;font-family:var(--font-serif);color:#1B2748}
+.lh small{display:block;font-size:13px;line-height:1.5}
+.lh strong{display:block;font-size:19px;letter-spacing:.05em;margin-top:2px}
+.lh em{display:block;font-style:normal;font-size:12px;letter-spacing:.1em;margin-top:2px}
+.lh hr{width:100%;border:0;border-top:3px double #1B2748;margin:6px 0 2px}
+.lh .sig{font-size:13px}
+
+/* ---------- Dialogs & toasts ---------- */
+dialog.dlg{border:0;padding:0;border-radius:var(--r-xl);box-shadow:var(--shadow-3);width:min(720px,calc(100vw - 24px));max-height:calc(100vh - 24px);background:#fff;color:var(--text);overflow:hidden}
+dialog.dlg.dlg-sm{width:min(440px,calc(100vw - 24px))}
+dialog.dlg.dlg-wide{width:min(920px,calc(100vw - 24px))}
+dialog.dlg::backdrop{background:rgba(10,18,42,.55);backdrop-filter:blur(3px)}
+dialog.dlg[open]{animation:pop .18s ease-out}
+@keyframes pop{from{opacity:0;transform:translateY(8px) scale(.985)}}
+.dlg-shell{display:flex;flex-direction:column;max-height:calc(100vh - 24px)}
+.dlg-head{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:18px 22px;border-bottom:1px solid var(--line-2)}
+.dlg-head h2{font-family:var(--font-serif);font-size:24px;font-weight:600;line-height:1.2}
+.dlg-body{padding:22px;overflow:auto}
+.dlg-foot{display:flex;justify-content:flex-end;gap:10px;padding:14px 22px;border-top:1px solid var(--line-2);background:#FAFBFF}
+.dlg-actions{display:flex;align-items:center;gap:8px}
+.cert-stage{display:flex;justify-content:center;padding:20px;background:#E6EAF5;overflow:auto;flex:1}
+.cert-scale{flex:none}
+.cert-inner{width:794px;height:1120px;transform-origin:top left}
+#toasts{position:fixed;inset:auto 20px 20px auto;margin:0;padding:0;border:0;background:transparent;overflow:visible;display:grid;gap:10px;width:min(360px,calc(100vw - 40px))}
+.toast{padding:12px 16px;border-radius:14px;color:#fff;background:var(--ink);font-weight:500;box-shadow:var(--shadow-2);animation:pop .2s ease-out}
+.toast.success{background:#176B48}
+.toast.error{background:#8F2525}
+
+/* ---------- Certificate sheet ---------- */
+.cert{position:relative;width:794px;height:1120px;overflow:hidden;background:#fff;color:#16213F;font-family:var(--font-serif);-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.cert-inner .cert{box-shadow:var(--shadow-2)}
+.cert-frame{position:absolute;inset:26px;border:2.5px solid #14214A;outline:1px solid #14214A;outline-offset:-9px}
+.cert-watermark{position:absolute;left:50%;top:54%;width:460px;height:460px;transform:translate(-50%,-50%);opacity:.07}
+.cert-watermark img{width:100%;height:100%;object-fit:contain}
+.cert-head{position:absolute;left:78px;right:78px;top:68px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.cert-logo{width:104px;height:104px;flex:none}
+.cert-logo .logo-box{--s:104px}
+.cert-spacer{width:104px;flex:none}
+.cert-lines{flex:1;text-align:center;line-height:1.45}
+.cert-lines p{font-size:15px}
+.cert-lines .cert-brgy{font-size:25px;font-weight:700;letter-spacing:.06em;margin-top:4px}
+.cert-lines .cert-office{font-size:13px;font-weight:600;letter-spacing:.14em;margin-top:2px}
+.cert-rule{position:absolute;left:78px;right:78px;top:196px;border-top:4px double #14214A}
+.cert-title{position:absolute;left:78px;right:78px;top:236px;text-align:center;font-size:33px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;line-height:1.2}
+.cert-body{position:absolute;left:92px;right:92px;top:340px;font-size:19px;line-height:1.95;text-align:justify}
+.cert-body p{margin-bottom:22px}
+.cert-body .cert-to{font-weight:700;letter-spacing:.03em}
+.cert-body p.ind{text-indent:48px}
+.cert-foot{position:absolute;left:92px;right:92px;bottom:120px;display:flex;justify-content:space-between;align-items:flex-end;gap:20px}
+.cert-meta{font-size:15px;line-height:1.7}
+.cert-meta b{font-weight:700}
+.cert-sign{min-width:290px;text-align:center}
+.cert-sign .line{border-top:1.5px solid #14214A;padding-top:6px}
+.cert-sign strong{display:block;font-size:19px;letter-spacing:.03em}
+.cert-sign span{font-size:15px}
+.cert-note{position:absolute;left:92px;right:92px;bottom:62px;text-align:center;font-size:12.5px;font-style:italic;color:#4A5675}
+#print-root{display:none}
+
+@media print{
+  @page{size:A4;margin:0}
+  html,body{background:#fff!important}
+  body>*:not(#print-root){display:none!important}
+  #print-root{display:block}
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width:1100px){
+  .cert-layout,.settings-grid,.grid-2{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:960px){
+  .shell{grid-template-columns:minmax(0,1fr)}
+  .side{position:fixed;z-index:40;left:0;top:0;width:282px;transform:translateX(-102%);transition:transform .22s ease;box-shadow:var(--shadow-3)}
+  .nav-open .side{transform:none}
+  .nav-open .scrim{display:block;position:fixed;inset:0;z-index:30;background:rgba(10,18,42,.5)}
+  .topbar{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20}
+  .topbar strong{font-family:var(--font-serif);font-size:19px}
+  .login{grid-template-columns:minmax(0,1fr)}
+  .login-art{padding:28px 24px 34px;gap:36px}
+}
+@media (max-width:720px){
+  .figures{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .fig:nth-child(3){border-left:0}
+  .fig:nth-child(n+3){border-top:1px solid var(--line-2)}
+  .form-grid{grid-template-columns:minmax(0,1fr)}
+  .hide-sm{display:none}
+  .hero{padding:24px 22px}
+  .toolbar .select{width:100%}
+  #toasts{inset:auto 12px 12px 12px;width:auto}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  .contours.draw path{stroke-dashoffset:0}
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="print-root" aria-hidden="true"></div>
+<div id="toasts" popover="manual" aria-live="polite"></div>
+
+<script>
+/* =====================================================================
+   CiviSync - local database (browser localStorage)
+   ===================================================================== */
+const DB_KEY = 'civisync.db.v1';
+const SESSION_KEY = 'civisync.session';
+const ADMIN = { user: 'tombits', pass: 'mamamoblue' };
+
+const DEFAULTS = {
+  settings: { barangay: 'Sta. Maria', municipality: 'Minalin', province: 'Pampanga', captain: 'Juan Dela Cruz', logo: '' },
+  residents: [],
+  certificates: [],
+  counters: {}
+};
+let db;
+
+function loadDB() {
+  try { const raw = localStorage.getItem(DB_KEY); db = raw ? JSON.parse(raw) : null; } catch (e) { db = null; }
+  if (!db || typeof db !== 'object') db = JSON.parse(JSON.stringify(DEFAULTS));
+  db.settings = Object.assign({}, DEFAULTS.settings, db.settings || {});
+  if (!Array.isArray(db.residents)) db.residents = [];
+  if (!Array.isArray(db.certificates)) db.certificates = [];
+  if (!db.counters || typeof db.counters !== 'object') db.counters = {};
+}
+function saveDB() {
+  try { localStorage.setItem(DB_KEY, JSON.stringify(db)); return true; }
+  catch (e) { toast('Storage is full. Export a backup, then remove the logo or old records.', 'error'); return false; }
+}
+
+/* =====================================================================
+   Helpers
+   ===================================================================== */
+const $  = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => Array.from(el.querySelectorAll(s));
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const ord = n => { const s = ['th','st','nd','rd'], v = n % 100; return n + (s[(v - 20) % 10] || s[v] || s[0]); };
+const fmtDate = iso => new Date(iso).toLocaleDateString('en-PH', { year: 'numeric', month: 'short', day: 'numeric' });
+
+function age(birth, on = new Date()) {
+  if (!birth) return 0;
+  const b = new Date(birth + 'T00:00:00');
+  let a = on.getFullYear() - b.getFullYear();
+  const m = on.getMonth() - b.getMonth();
+  if (m < 0 || (m === 0 && on.getDate() < b.getDate())) a--;
+  return Math.max(0, a);
+}
+
+const ICONS = {
+  grid: '<rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/>',
+  users: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6"/><path d="M16 4.6a3.5 3.5 0 0 1 0 6.8"/><path d="M18 14.3c2 .7 3.5 2.6 3.5 5.7"/>',
+  file: '<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h6"/>',
+  shield: '<path d="M12 3l8 3v6c0 4.5-3.2 8-8 9-4.8-1-8-4.5-8-9V6z"/><path d="m9 12 2 2 4-4"/>',
+  sliders: '<path d="M4 6h9M19 6h1M4 12h3M13 12h7M4 18h11M21 18h-1"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/>',
+  plus: '<path d="M12 5v14M5 12h14"/>',
+  search: '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
+  pencil: '<path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16z"/><path d="m13.5 6.5 4 4"/>',
+  trash: '<path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/>',
+  printer: '<path d="M7 9V3h10v6"/><rect x="4" y="9" width="16" height="8" rx="2"/><path d="M7 14h10v7H7z"/>',
+  logout: '<path d="M9 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h3"/><path d="m16 8 4 4-4 4M20 12H9"/>',
+  menu: '<path d="M4 7h16M4 12h16M4 17h16"/>',
+  x: '<path d="m6 6 12 12M18 6 6 18"/>',
+  eye: '<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
+  eyeoff: '<path d="M3 3l18 18"/><path d="M10.6 6.1A9.8 9.8 0 0 1 12 6c6.5 0 10 6 10 6a17 17 0 0 1-3.2 3.9M6.6 7.6C3.9 9.3 2 12 2 12s3.5 6 10 6c1.6 0 3-.4 4.3-1"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/>',
+  upload: '<path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/>',
+  download: '<path d="M12 4v12M7 11l5 5 5-5"/><path d="M4 18v1a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-1"/>',
+  ok: '<circle cx="12" cy="12" r="9"/><path d="m8.5 12.5 2.5 2.5 4.5-5"/>',
+  no: '<circle cx="12" cy="12" r="9"/><path d="m9 9 6 6M15 9l-6 6"/>'
+};
+const icon = (n, s = 18) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[n] || ''}</svg>`;
+
+function toast(msg, kind = '') {
+  const box = $('#toasts');
+  const el = document.createElement('div');
+  el.className = 'toast ' + kind;
+  el.textContent = msg;
+  box.appendChild(el);
+  try { if (box.showPopover) { if (box.matches(':popover-open')) box.hidePopover(); box.showPopover(); } } catch (e) {}
+  setTimeout(() => {
+    el.remove();
+    if (!box.children.length) { try { box.hidePopover && box.hidePopover(); } catch (e) {} }
+  }, 3400);
+}
+
+/* =====================================================================
+   Barangay settings -> branding used everywhere
+   ===================================================================== */
+const S = () => db.settings;
+const brgyName = () => (S().barangay || '').trim().replace(/^(barangay|brgy\.?)\s+/i, '');
+const brgyFull = () => 'Barangay ' + (brgyName() || 'Unnamed');
+const captainFull = () => { const n = (S().captain || '').trim().replace(/^hon\.?\s+/i, ''); return n ? 'Hon. ' + n : 'Punong Barangay'; };
+const placeShort = () => [S().municipality, S().province].map(x => (x || '').trim()).filter(Boolean).join(', ');
+function muniLine(m) {
+  m = (m || '').trim(); if (!m) return '';
+  if (/^(municipality|city) of /i.test(m)) return m;
+  if (/\bcity\b/i.test(m)) return 'City of ' + m.replace(/\bcity\b/i, '').replace(/\s+/g, ' ').trim();
+  return 'Municipality of ' + m;
+}
+function provLine(p) {
+  p = (p || '').trim(); if (!p) return '';
+  if (/^province of /i.test(p) || /metro manila|ncr/i.test(p)) return p;
+  return 'Province of ' + p;
+}
+function logoMarkup(logo = S().logo) {
+  if (logo) return `<img class="logo-img" src="${logo}" alt="">`;
+  const ch = (brgyName()[0] || 'B').toUpperCase();
+  return `<span class="logo-fallback" aria-hidden="true">${esc(ch)}</span>`;
+}
+
+/* Topographic line pattern (brand motif) */
+function contours({ cx = 560, cy = 280, n = 14, start = 30, step = 30, seed = 0, animate = false, opacity = .1 } = {}) {
+  let paths = '';
+  for (let i = 0; i < n; i++) {
+    const r = start + i * step, pts = [];
+    for (let k = 0; k <= 72; k++) {
+      const t = k / 72 * Math.PI * 2;
+      const w = 1 + .09 * Math.sin(3 * t + i * .45 + seed) + .05 * Math.sin(5 * t - i * .3 + seed * 2) + .03 * Math.sin(2 * t + i * .7);
+      pts.push((cx + Math.cos(t) * r * w * 1.25).toFixed(1) + ' ' + (cy + Math.sin(t) * r * w).toFixed(1));
+    }
+    paths += `<path d="M${pts.join('L')}Z" pathLength="1" style="--i:${i}"/>`;
+  }
+  return `<svg class="contours${animate ? ' draw' : ''}" viewBox="0 0 800 500" preserveAspectRatio="xMidYMid slice" aria-hidden="true" fill="none" stroke="rgba(160,185,255,${opacity})" stroke-width="1">${paths}</svg>`;
+}
+
+/* =====================================================================
+   Domain helpers
+   ===================================================================== */
+const SECTORS = [
+  { key: 'pwd', label: 'PWD' },
+  { key: 'solo', label: 'Solo parent' },
+  { key: 'fourps', label: '4Ps' },
+  { key: 'indigent', label: 'Indigent' }
+];
+const CERT_TYPES = [
+  { key: 'clearance', label: 'Barangay Clearance', desc: 'For employment, business and other legal purposes' },
+  { key: 'residency', label: 'Certificate of Residency', desc: 'Confirms the person lives in the barangay' },
+  { key: 'indigency', label: 'Certificate of Indigency', desc: 'For financial, medical and scholarship assistance' },
+  { key: 'goodmoral', label: 'Certificate of Good Moral Character', desc: 'For school and job applications' }
+];
+const typeOf = k => CERT_TYPES.find(t => t.key === k) || CERT_TYPES[0];
+const fullName = r => [r.first, r.middle, r.last, r.suffix].map(x => (x || '').trim()).filter(Boolean).join(' ');
+const addr = r => [r.address, r.purok].map(x => (x || '').trim()).filter(Boolean).join(', ');
+const initials = r => ((r.first || '?')[0] + (r.last || '')[0]).toUpperCase();
+function sectorsOf(r) {
+  const out = [];
+  if (age(r.birthdate) >= 60) out.push({ key: 'senior', label: 'Senior citizen' });
+  (r.sectors || []).forEach(k => { const s = SECTORS.find(x => x.key === k); if (s) out.push(s); });
+  return out;
+}
+const sortedResidents = () => [...db.residents].sort((a, b) => (a.last + a.first).localeCompare(b.last + b.first));
+
+/* =====================================================================
+   UI state & routing
+   ===================================================================== */
+const ui = { resQ: '', resSector: 'all', certQ: '', certResident: null, certType: 'clearance', certPurpose: '', logQ: '', verifyRef: '', pendingLogo: undefined, navOpen: false };
+const ROUTES = ['dashboard', 'residents', 'certificates', 'verify', 'settings'];
+const currentRoute = () => { const h = (location.hash || '').replace(/^#\/?/, '').split('?')[0]; return ROUTES.includes(h) ? h : 'dashboard'; };
+const isAuthed = () => { try { return sessionStorage.getItem(SESSION_KEY) === '1'; } catch (e) { return false; } };
+const app = document.getElementById('app');
+
+function render() {
+  document.title = brgyFull() + ' | CiviSync';
+  if (!isAuthed()) return renderLogin();
+  renderShell();
+}
+
+/* ---------- Login ---------- */
+function renderLogin() {
+  app.innerHTML = `
+  <div class="login">
+    <section class="login-art">
+      ${contours({ cx: 520, cy: 300, n: 16, start: 34, step: 34, animate: true, opacity: .15 })}
+      <span class="wordmark">CiviSync</span>
+      <div class="art-main">
+        <div class="logo-box" style="--s:92px">${logoMarkup()}</div>
+        <h1>${esc(brgyFull())}</h1>
+        <p class="place">${esc(placeShort())}</p>
+        <p class="tag">Resident records and certificate issuance for the barangay hall.</p>
+      </div>
+    </section>
+    <section class="login-form-wrap">
+      <form id="login-form" class="login-form" autocomplete="on">
+        <div><h2>Sign in</h2><p class="muted" style="margin-top:6px">Manage resident records and issue barangay certificates.</p></div>
+        <div class="field"><label for="lg-user">Username</label><input id="lg-user" class="input" name="user" autocomplete="username" required autofocus></div>
+        <div class="field"><label for="lg-pass">Password</label>
+          <div class="pw"><input id="lg-pass" class="input" name="pass" type="password" autocomplete="current-password" required>
+          <button type="button" class="icon-btn" data-action="toggle-pw" aria-label="Show password">${icon('eye')}</button></div>
+        </div>
+        <p class="form-error" id="lg-error" role="alert" hidden></p>
+        <button class="btn btn-primary btn-block" type="submit">Sign in</button>
+      </form>
+    </section>
+  </div>`;
+}
+
+/* ---------- Shell ---------- */
+function renderShell() {
+  const r = currentRoute();
+  const nav = [['dashboard', 'Dashboard', 'grid'], ['residents', 'Residents', 'users'], ['certificates', 'Certificates', 'file'], ['verify', 'Verify', 'shield'], ['settings', 'Settings', 'sliders']];
+  const pages = { dashboard: pageDashboard, residents: pageResidents, certificates: pageCertificates, verify: pageVerify, settings: pageSettings };
+  app.innerHTML = `
+  <div class="shell ${ui.navOpen ? 'nav-open' : ''}">
+    <aside class="side" id="side">
+      <div class="brand"><div class="logo-box" style="--s:46px">${logoMarkup()}</div>
+        <div><div class="brand-name">${esc(brgyFull())}</div><div class="brand-sub">${esc(placeShort() || 'CiviSync')}</div></div></div>
+      <nav class="nav" aria-label="Main">
+        ${nav.map(n => `<a href="#/${n[0]}" ${r === n[0] ? 'aria-current="page"' : ''}>${icon(n[2], 20)}<span>${n[1]}</span></a>`).join('')}
+      </nav>
+      <div class="side-foot">
+        <div class="me"><span class="avatar sm">T</span><div><b>tombits</b><small>Administrator</small></div></div>
+        <button class="btn btn-ghost-dark" data-action="logout">${icon('logout')} Sign out</button>
+      </div>
+    </aside>
+    <div class="scrim" data-action="close-nav"></div>
+    <div class="content">
+      <div class="topbar"><button class="icon-btn" data-action="toggle-nav" aria-label="Open menu">${icon('menu', 22)}</button><strong>${esc(brgyFull())}</strong></div>
+      <main class="main" id="view">${pages[r]()}</main>
+    </div>
+  </div>`;
+  if (r === 'residents') renderResidentRows();
+  if (r === 'certificates') { renderPicker(); renderLog(); }
+  if (r === 'settings') updateLetterhead();
+  if (r === 'verify') renderVerify();
+}
+
+/* =====================================================================
+   Pages
+   ===================================================================== */
+function pageDashboard() {
+  const R = db.residents, C = db.certificates, now = new Date();
+  const seniors = R.filter(r => age(r.birthdate) >= 60).length;
+  const sector = R.filter(r => (r.sectors || []).length).length;
+  const month = C.filter(c => { const d = new Date(c.issuedAt); return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear(); }).length;
+  const by = {}; R.forEach(r => { const k = (r.purok || 'Unassigned').trim() || 'Unassigned'; by[k] = (by[k] || 0) + 1; });
+  const rows = Object.entries(by).sort((a, b) => b[1] - a[1]).slice(0, 7);
+  const max = rows[0] ? rows[0][1] : 1;
+  const recent = [...C].reverse().slice(0, 6);
+  const dateStr = now.toLocaleDateString('en-PH', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+  return `
+  <section class="hero">
+    ${contours({ cx: 640, cy: 220, n: 12, start: 26, step: 30, seed: 1.7, opacity: .13 })}
+    <div class="hero-id">
+      <div class="logo-box" style="--s:72px">${logoMarkup()}</div>
+      <div><p class="hero-date">${esc(dateStr)}</p><h1>${esc(brgyFull())}</h1>
+      <p class="hero-sub">${esc(captainFull())}, Punong Barangay${placeShort() ? ' &nbsp;|&nbsp; ' + esc(placeShort()) : ''}</p></div>
+    </div>
+    <div class="hero-actions">
+      <a class="btn btn-light" href="#/certificates">${icon('file')} Issue certificate</a>
+      <button class="btn btn-outline-light" data-action="add-resident">${icon('plus')} Add resident</button>
+    </div>
+  </section>
+  <section class="figures" aria-label="Summary">
+    <div class="fig"><b>${R.length}</b><span>Residents</span></div>
+    <div class="fig"><b>${seniors}</b><span>Senior citizens</span></div>
+    <div class="fig"><b>${sector}</b><span>In a priority sector</span></div>
+    <div class="fig"><b>${month}</b><span>Certificates this month</span></div>
+  </section>
+  <div class="grid-2">
+    <section class="panel"><div class="panel-head"><h2>Residents by purok</h2></div><div class="panel-body">
+      ${rows.length ? rows.map(([k, n]) => `<div class="bar-row"><span>${esc(k)}</span><div class="track"><div class="fill" style="width:${Math.max(4, n / max * 100)}%"></div></div><span class="n">${n}</span></div>`).join('')
+        : `<div class="empty"><p>No residents yet. Add your first resident or try the sample records.</p><div class="row"><button class="btn btn-primary" data-action="add-resident">Add resident</button><button class="btn" data-action="load-sample">Load sample residents</button></div></div>`}
+    </div></section>
+    <section class="panel"><div class="panel-head"><h2>Recent certificates</h2><a class="btn" href="#/certificates" style="height:34px">View all</a></div><div class="panel-body">
+      ${recent.length ? recent.map(c => `<div class="list-row"><div><strong>${esc(c.snap.name)}</strong><small>${esc(typeOf(c.type).label)} &nbsp;|&nbsp; ${esc(fmtDate(c.issuedAt))}</small></div><button class="btn" style="height:34px" data-action="view-cert" data-id="${c.id}"><span class="ref">${esc(c.ref)}</span></button></div>`).join('')
+        : `<div class="empty"><p>No certificates issued yet.</p><a class="btn btn-primary" href="#/certificates">Issue certificate</a></div>`}
+    </div></section>
+  </div>`;
+}
+
+/* ---------- Residents ---------- */
+function pageResidents() {
+  return `
+  <div class="page-head"><div><h1>Residents</h1><p class="muted" id="res-count"></p></div>
+    <button class="btn btn-primary" data-action="add-resident">${icon('plus')} Add resident</button></div>
+  <section class="panel">
+    <div class="toolbar">
+      <div class="search">${icon('search')}<input id="res-q" class="input" type="search" placeholder="Search by name, purok or address" value="${esc(ui.resQ)}" aria-label="Search residents"></div>
+      <select id="res-sector" class="select" aria-label="Filter by sector">
+        <option value="all">All residents</option><option value="senior">Senior citizens</option>
+        ${SECTORS.map(s => `<option value="${s.key}">${s.label}</option>`).join('')}
+      </select>
+    </div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Resident</th><th>Age and sex</th><th class="hide-sm">Address</th><th class="hide-sm">Sectors</th><th></th></tr></thead>
+      <tbody id="res-body"></tbody>
+    </table></div>
+  </section>`;
+}
+function renderResidentRows() {
+  const body = $('#res-body'); if (!body) return;
+  const sel = $('#res-sector'); if (sel) sel.value = ui.resSector;
+  const q = ui.resQ.trim().toLowerCase();
+  const list = sortedResidents().filter(r => {
+    if (q && !(fullName(r) + ' ' + addr(r)).toLowerCase().includes(q)) return false;
+    if (ui.resSector !== 'all') return sectorsOf(r).some(s => s.key === ui.resSector);
+    return true;
+  });
+  const cnt = $('#res-count'); if (cnt) cnt.textContent = `${list.length} of ${db.residents.length} residents`;
+  if (!list.length) {
+    body.innerHTML = `<tr><td colspan="5"><div class="empty">${db.residents.length
+      ? '<p>No residents match your search or filter.</p>'
+      : '<p>No residents yet. Add the first record to start issuing certificates.</p><div class="row"><button class="btn btn-primary" data-action="add-resident">Add resident</button><button class="btn" data-action="load-sample">Load sample residents</button></div>'}</div></td></tr>`;
+    return;
+  }
+  body.innerHTML = list.map(r => `
+    <tr>
+      <td><div class="who"><span class="avatar">${esc(initials(r))}</span><div><strong>${esc(fullName(r))}</strong><small>${esc(r.contact || 'No contact number')}</small></div></div></td>
+      <td>${age(r.birthdate)} yrs, ${esc(r.sex)}</td>
+      <td class="hide-sm">${esc(addr(r))}</td>
+      <td class="hide-sm">${sectorsOf(r).map(s => `<span class="chip chip-${s.key}">${s.label}</span>`).join('') || '<span class="muted">None</span>'}</td>
+      <td class="actions">
+        <button class="icon-btn" data-action="issue-for" data-id="${r.id}" title="Issue certificate" aria-label="Issue certificate for ${esc(fullName(r))}">${icon('file')}</button>
+        <button class="icon-btn" data-action="edit-resident" data-id="${r.id}" title="Edit" aria-label="Edit ${esc(fullName(r))}">${icon('pencil')}</button>
+        <button class="icon-btn danger" data-action="delete-resident" data-id="${r.id}" title="Delete" aria-label="Delete ${esc(fullName(r))}">${icon('trash')}</button>
+      </td>
+    </tr>`).join('');
+}
+
+function openResidentForm(id) {
+  const r = id ? db.residents.find(x => x.id === id) : {};
+  if (id && !r) return;
+  const v = k => esc(r[k] ?? '');
+  const opt = (k, list) => list.map(o => `<option ${r[k] === o ? 'selected' : ''}>${o}</option>`).join('');
+  const today = new Date().toISOString().slice(0, 10);
+  const d = openDialog(`
+  <form id="res-form" class="dlg-shell" data-id="${esc(id || '')}">
+    <div class="dlg-head"><h2>${id ? 'Edit resident' : 'Add resident'}</h2><button type="button" class="icon-btn" data-action="close-dialog" aria-label="Close">${icon('x')}</button></div>
+    <div class="dlg-body"><div class="form-grid">
+      <div class="field"><label for="f-first">First name</label><input id="f-first" name="first" class="input" required value="${v('first')}"></div>
+      <div class="field"><label for="f-middle">Middle name</label><input id="f-middle" name="middle" class="input" value="${v('middle')}"></div>
+      <div class="field"><label for="f-last">Last name</label><input id="f-last" name="last" class="input" required value="${v('last')}"></div>
+      <div class="field"><label for="f-suffix">Suffix</label><input id="f-suffix" name="suffix" class="input" placeholder="Jr., Sr., III" value="${v('suffix')}"></div>
+      <div class="field"><label for="f-sex">Sex</label><select id="f-sex" name="sex" class="select" required><option value="" disabled ${r.sex ? '' : 'selected'}>Select</option>${opt('sex', ['Female', 'Male'])}</select></div>
+      <div class="field"><label for="f-birth">Date of birth</label><input id="f-birth" name="birthdate" type="date" class="input" required min="1900-01-01" max="${today}" value="${v('birthdate')}"></div>
+      <div class="field"><label for="f-civil">Civil status</label><select id="f-civil" name="civil" class="select" required><option value="" disabled ${r.civil ? '' : 'selected'}>Select</option>${opt('civil', ['Single', 'Married', 'Widowed', 'Separated'])}</select></div>
+      <div class="field"><label for="f-since">Living in the barangay since</label><input id="f-since" name="since" type="number" class="input" min="1900" max="${new Date().getFullYear()}" placeholder="Year" value="${v('since')}"></div>
+      <div class="field"><label for="f-purok">Purok or zone</label><input id="f-purok" name="purok" class="input" required placeholder="Purok 1" value="${v('purok')}"></div>
+      <div class="field"><label for="f-address">House number and street</label><input id="f-address" name="address" class="input" value="${v('address')}"></div>
+      <div class="field"><label for="f-job">Occupation</label><input id="f-job" name="occupation" class="input" value="${v('occupation')}"></div>
+      <div class="field"><label for="f-contact">Contact number</label><input id="f-contact" name="contact" class="input" inputmode="tel" value="${v('contact')}"></div>
+      <div class="field span-2"><span class="lbl">Sectors</span>
+        <div class="form-grid" style="gap:10px">${SECTORS.map(s => `<label class="check"><input type="checkbox" name="sec_${s.key}" ${(r.sectors || []).includes(s.key) ? 'checked' : ''}><span>${s.label}</span></label>`).join('')}</div>
+        <span class="hint">Senior citizen is set automatically at age 60.</span></div>
+    </div></div>
+    <div class="dlg-foot"><button type="button" class="btn" data-action="close-dialog">Cancel</button><button type="submit" class="btn btn-primary">${id ? 'Save changes' : 'Save resident'}</button></div>
+  </form>`);
+  setTimeout(() => $('#f-first', d)?.focus(), 30);
+}
+function saveResident(form) {
+  const f = new FormData(form), id = form.dataset.id;
+  const g = k => (f.get(k) || '').toString().trim();
+  const rec = {
+    first: g('first'), middle: g('middle'), last: g('last'), suffix: g('suffix'),
+    sex: g('sex'), birthdate: g('birthdate'), civil: g('civil'), since: g('since'),
+    purok: g('purok'), address: g('address'), occupation: g('occupation'), contact: g('contact'),
+    sectors: SECTORS.filter(s => f.get('sec_' + s.key)).map(s => s.key)
+  };
+  if (id) {
+    const i = db.residents.findIndex(x => x.id === id);
+    const prev = db.residents[i];
+    db.residents[i] = Object.assign({}, prev, rec);
+    if (!saveDB()) { db.residents[i] = prev; return; }
+  } else {
+    rec.id = uid(); rec.createdAt = new Date().toISOString();
+    db.residents.push(rec);
+    if (!saveDB()) { db.residents.pop(); return; }
+  }
+  form.closest('dialog').close();
+  toast(id ? 'Resident updated.' : 'Resident saved.', 'success');
+  render();
+}
+
+/* ---------- Certificates ---------- */
+function pageCertificates() {
+  return `
+  <div class="page-head"><div><h1>Certificates</h1><p class="muted">Issue a certificate from a resident record, then print it for signing.</p></div></div>
+  <div class="cert-layout">
+    <section class="panel"><form id="cert-form" class="panel-body stack" novalidate>
+      <div class="field"><span class="lbl">Resident</span><div id="picker"></div></div>
+      <div class="field"><span class="lbl">Certificate</span>
+        <div class="type-grid">${CERT_TYPES.map(t => `<label class="type-tile"><input type="radio" name="ctype" value="${t.key}" ${ui.certType === t.key ? 'checked' : ''}><span><strong>${t.label}</strong><small>${t.desc}</small></span></label>`).join('')}</div></div>
+      <div class="field"><label for="cert-purpose">Purpose</label>
+        <input id="cert-purpose" class="input" list="purposes" placeholder="e.g. Employment" value="${esc(ui.certPurpose)}" autocomplete="off">
+        <datalist id="purposes"><option>Employment</option><option>Scholarship application</option><option>Business permit</option><option>Medical assistance</option><option>Passport application</option><option>School enrollment</option><option>Financial assistance</option></datalist></div>
+      <button class="btn btn-primary btn-block" type="submit">${icon('file')} Issue certificate</button>
+    </form></section>
+    <section class="panel">
+      <div class="toolbar" style="border-bottom:1px solid var(--line-2)"><div class="search">${icon('search')}<input id="log-q" class="input" type="search" placeholder="Search by reference number or name" value="${esc(ui.logQ)}" aria-label="Search issued certificates"></div></div>
+      <div class="table-wrap"><table><thead><tr><th>Reference</th><th>Resident</th><th class="hide-sm">Certificate</th><th class="hide-sm">Issued</th><th></th></tr></thead><tbody id="log-body"></tbody></table></div>
+    </section>
+  </div>`;
+}
+function renderPicker() {
+  const el = $('#picker'); if (!el) return;
+  const chosen = db.residents.find(r => r.id === ui.certResident);
+  if (chosen) {
+    el.innerHTML = `<div class="picked"><span class="avatar">${esc(initials(chosen))}</span><div><strong>${esc(fullName(chosen))}</strong><small>${age(chosen.birthdate)} yrs, ${esc(chosen.sex)}${addr(chosen) ? ', ' + esc(addr(chosen)) : ''}</small></div><button type="button" class="btn" style="height:34px" data-action="clear-pick">Change</button></div>`;
+    return;
+  }
+  if (!db.residents.length) { el.innerHTML = `<div class="empty" style="padding:20px"><p>Add a resident first, then come back to issue a certificate.</p><a class="btn btn-primary" href="#/residents">Go to residents</a></div>`; return; }
+  const q = ui.certQ.trim().toLowerCase();
+  const list = sortedResidents().filter(r => !q || (fullName(r) + ' ' + addr(r)).toLowerCase().includes(q)).slice(0, 6);
+  el.innerHTML = `<div class="search">${icon('search')}<input id="cert-q" class="input" placeholder="Search resident by name" value="${esc(ui.certQ)}" autocomplete="off" aria-label="Search resident"></div>
+    <div class="pick-list">${list.length ? list.map(r => `<button type="button" class="pick-item" data-action="pick-resident" data-id="${r.id}"><span class="avatar">${esc(initials(r))}</span><span><strong>${esc(fullName(r))}</strong><small>${age(r.birthdate)} yrs${addr(r) ? ', ' + esc(addr(r)) : ''}</small></span></button>`).join('') : '<p class="hint" style="padding:8px 4px">No resident matches that name.</p>'}</div>`;
+  if (document.activeElement === document.body && ui.certQ) { const i = $('#cert-q'); if (i) { i.focus(); i.setSelectionRange(i.value.length, i.value.length); } }
+}
+function renderLog() {
+  const body = $('#log-body'); if (!body) return;
+  const q = ui.logQ.trim().toLowerCase();
+  const list = [...db.certificates].reverse().filter(c => !q || (c.ref + ' ' + c.snap.name).toLowerCase().includes(q));
+  if (!list.length) { body.innerHTML = `<tr><td colspan="5"><div class="empty"><p>${db.certificates.length ? 'No certificates match your search.' : 'Issued certificates will appear here.'}</p></div></td></tr>`; return; }
+  body.innerHTML = list.map(c => `<tr>
+    <td><span class="ref">${esc(c.ref)}</span></td>
+    <td><strong style="font-weight:600">${esc(c.snap.name)}</strong><br><small class="muted">${esc(c.purpose)}</small></td>
+    <td class="hide-sm">${esc(typeOf(c.type).label)}</td>
+    <td class="hide-sm">${esc(fmtDate(c.issuedAt))}</td>
+    <td class="actions">
+      <button class="icon-btn" data-action="view-cert" data-id="${c.id}" title="View" aria-label="View ${esc(c.ref)}">${icon('eye')}</button>
+      <button class="icon-btn" data-action="print-cert" data-id="${c.id}" title="Print" aria-label="Print ${esc(c.ref)}">${icon('printer')}</button>
+    </td></tr>`).join('');
+}
+function issueCertificate() {
+  const r = db.residents.find(x => x.id === ui.certResident);
+  if (!r) return toast('Choose a resident first.', 'error');
+  const purpose = (ui.certPurpose || '').trim();
+  if (!purpose) { toast('Enter the purpose of the certificate.', 'error'); $('#cert-purpose')?.focus(); return; }
+  const now = new Date(), yr = now.getFullYear();
+  db.counters[yr] = (db.counters[yr] || 0) + 1;
+  const c = {
+    id: uid(), ref: `CVS-${yr}-${String(db.counters[yr]).padStart(4, '0')}`,
+    type: ui.certType, purpose, residentId: r.id,
+    snap: { name: fullName(r), age: age(r.birthdate), sex: r.sex, civil: r.civil, address: addr(r), since: r.since || '' },
+    issuedAt: now.toISOString()
+  };
+  db.certificates.push(c);
+  if (!saveDB()) { db.certificates.pop(); db.counters[yr]--; return; }
+  ui.certResident = null; ui.certQ = ''; ui.certPurpose = '';
+  render();
+  toast('Certificate issued.', 'success');
+  openCertPreview(c);
+}
+
+/* ---------- Certificate sheet ---------- */
+function certificateHTML(c) {
+  const s = c.snap, t = typeOf(c.type), place = [brgyFull(), placeShort()].filter(Boolean).join(', ');
+  const d = new Date(c.issuedAt);
+  const name = `<strong>${esc(s.name.toUpperCase())}</strong>`;
+  const who = `${name}, ${s.age} years old, ${esc((s.civil || '').toLowerCase())}`;
+  const home = s.address ? `${esc(s.address)}, ${esc(brgyFull())}` : esc(brgyFull());
+  const purpose = `<strong>${esc(c.purpose)}</strong>`;
+  let p1 = '', p2 = '';
+  if (c.type === 'clearance') {
+    p1 = `This is to certify that ${who}, a resident of ${home}, ${esc(placeShort())}, has no derogatory record on file in this barangay as of the date of issuance.`;
+    p2 = `This clearance is issued upon the request of the above-named person for ${purpose}, and for whatever legal purpose it may serve.`;
+  } else if (c.type === 'residency') {
+    p1 = `This is to certify that ${who}, is a bonafide resident of ${home}, ${esc(placeShort())}${s.since ? `, and has been living in this barangay since ${esc(s.since)}` : ''}.`;
+    p2 = `This certification is issued upon the request of the above-named person for ${purpose}.`;
+  } else if (c.type === 'indigency') {
+    p1 = `This is to certify that ${who}, a resident of ${home}, ${esc(placeShort())}, belongs to the indigent families of this barangay and does not have sufficient income to meet the family's basic needs.`;
+    p2 = `This certification is issued upon the request of the above-named person for ${purpose}.`;
+  } else {
+    p1 = `This is to certify that ${who}, a resident of ${home}, ${esc(placeShort())}, is a person of good moral character and has not been involved in any unlawful or disorderly activity in this barangay, based on the records on file.`;
+    p2 = `This certification is issued upon the request of the above-named person for ${purpose}.`;
+  }
+  const p3 = `Issued this ${ord(d.getDate())} day of ${MONTHS[d.getMonth()]}, ${d.getFullYear()} at ${esc(place)}, Philippines.`;
+  return `
+  <article class="cert">
+    <div class="cert-frame"></div>
+    ${S().logo ? `<div class="cert-watermark"><img src="${S().logo}" alt=""></div>` : ''}
+    <header class="cert-head">
+      <div class="cert-logo"><div class="logo-box">${logoMarkup()}</div></div>
+      <div class="cert-lines">
+        <p>Republic of the Philippines</p>
+        ${provLine(S().province) ? `<p>${esc(provLine(S().province))}</p>` : ''}
+        ${muniLine(S().municipality) ? `<p>${esc(muniLine(S().municipality))}</p>` : ''}
+        <p class="cert-brgy">${esc(brgyFull().toUpperCase())}</p>
+        <p class="cert-office">OFFICE OF THE PUNONG BARANGAY</p>
+      </div>
+      <div class="cert-spacer"></div>
+    </header>
+    <div class="cert-rule"></div>
+    <h1 class="cert-title">${esc(t.label)}</h1>
+    <div class="cert-body">
+      <p class="cert-to">TO WHOM IT MAY CONCERN:</p>
+      <p class="ind">${p1}</p>
+      <p class="ind">${p2}</p>
+      <p class="ind">${p3}</p>
+    </div>
+    <div class="cert-foot">
+      <div class="cert-meta"><div><b>Reference no.</b> ${esc(c.ref)}</div><div><b>Date issued</b> ${esc(MONTHS[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear())}</div></div>
+      <div class="cert-sign"><div class="line"><strong>${esc(captainFull().toUpperCase())}</strong><span>Punong Barangay</span></div></div>
+    </div>
+    <p class="cert-note">Not valid without the official barangay dry seal. Verify this certificate with its reference number at the barangay hall.</p>
+  </article>`;
+}
+function openCertPreview(c) {
+  const d = openDialog(`
+  <div class="dlg-shell">
+    <div class="dlg-head"><div><h2>${esc(typeOf(c.type).label)}</h2><p class="muted"><span class="ref">${esc(c.ref)}</span> &nbsp;|&nbsp; ${esc(c.snap.name)}</p></div>
+      <div class="dlg-actions"><button class="btn btn-primary" data-action="print-cert" data-id="${c.id}">${icon('printer')} Print</button><button class="icon-btn" data-action="close-dialog" aria-label="Close">${icon('x')}</button></div></div>
+    <div class="cert-stage"><div class="cert-scale"><div class="cert-inner">${certificateHTML(c)}</div></div></div>
+  </div>`, { cls: 'dlg-wide' });
+  const fit = () => {
+    const stage = $('.cert-stage', d), box = $('.cert-scale', d), inner = $('.cert-inner', d);
+    if (!stage) return;
+    const k = Math.min(1, (stage.clientWidth - 40) / 794);
+    inner.style.transform = `scale(${k})`; box.style.width = (794 * k) + 'px'; box.style.height = (1120 * k) + 'px';
+  };
+  fit();
+  if (window.ResizeObserver) new ResizeObserver(fit).observe($('.cert-stage', d));
+}
+function printCertificate(c) {
+  const root = $('#print-root');
+  root.innerHTML = certificateHTML(c);
+  const done = () => { root.innerHTML = ''; window.removeEventListener('afterprint', done); };
+  window.addEventListener('afterprint', done);
+  setTimeout(() => window.print(), 80);
+}
+
+/* ---------- Verify ---------- */
+function pageVerify() {
+  return `
+  <div class="page-head"><div><h1>Verify a certificate</h1><p class="muted">Enter the reference number printed on the certificate to confirm it was issued here.</p></div></div>
+  <section class="panel" style="max-width:640px"><div class="panel-body">
+    <form id="verify-form" class="field" novalidate>
+      <label for="v-ref">Reference number</label>
+      <div style="display:flex;gap:10px"><input id="v-ref" class="input" placeholder="CVS-2026-0001" autocomplete="off" value="${esc(ui.verifyRef)}"><button class="btn btn-primary" type="submit">Verify</button></div>
+    </form>
+    <div id="verify-out" aria-live="polite"></div>
+  </div></section>`;
+}
+function renderVerify() {
+  const out = $('#verify-out'); if (!out) return;
+  const ref = ui.verifyRef.trim().toUpperCase();
+  if (!ref) { out.innerHTML = ''; return; }
+  const c = db.certificates.find(x => x.ref.toUpperCase() === ref);
+  out.innerHTML = c
+    ? `<div class="result ok">${icon('ok', 26)}<div><strong>Valid certificate</strong><dl><dt>Issued to</dt><dd>${esc(c.snap.name)}</dd><dt>Certificate</dt><dd>${esc(typeOf(c.type).label)}</dd><dt>Purpose</dt><dd>${esc(c.purpose)}</dd><dt>Date issued</dt><dd>${esc(fmtDate(c.issuedAt))}</dd><dt>Reference</dt><dd>${esc(c.ref)}</dd></dl></div></div>`
+    : `<div class="result bad">${icon('no', 26)}<div><strong>No certificate found</strong><p style="margin-top:4px">Check the reference number for typing errors. Reference numbers look like CVS-2026-0001.</p></div></div>`;
+}
+
+/* ---------- Settings ---------- */
+function pageSettings() {
+  const s = S();
+  const logo = ui.pendingLogo !== undefined ? ui.pendingLogo : s.logo;
+  return `
+  <div class="page-head"><div><h1>Settings</h1><p class="muted">The barangay name, captain and logo appear on the sign-in page, the sidebar and every certificate.</p></div></div>
+  <div class="settings-grid">
+    <div class="stack">
+      <section class="panel"><form id="settings-form" class="panel-body stack" novalidate>
+        <div class="form-grid">
+          <div class="field"><label for="s-brgy">Barangay name</label><input id="s-brgy" name="barangay" class="input" value="${esc(s.barangay)}" placeholder="Sta. Maria" required></div>
+          <div class="field"><label for="s-captain">Punong Barangay (captain)</label><input id="s-captain" name="captain" class="input" value="${esc(s.captain)}" placeholder="Juan Dela Cruz" required></div>
+          <div class="field"><label for="s-muni">Municipality or city</label><input id="s-muni" name="municipality" class="input" value="${esc(s.municipality)}" placeholder="Minalin"></div>
+          <div class="field"><label for="s-prov">Province</label><input id="s-prov" name="province" class="input" value="${esc(s.province)}" placeholder="Pampanga"></div>
+        </div>
+        <div class="field"><span class="lbl">Barangay logo</span>
+          <div class="logo-row">
+            <div class="logo-well" id="logo-well"><div class="logo-box" style="--s:68px">${logoMarkup(logo)}</div></div>
+            <div style="display:grid;gap:8px">
+              <div style="display:flex;gap:8px;flex-wrap:wrap">
+                <label class="btn" for="logo-file" style="cursor:pointer">${icon('upload')} Upload logo</label>
+                <button type="button" class="btn" data-action="remove-logo">Remove</button>
+              </div>
+              <span class="hint">PNG with a transparent background works best.</span>
+            </div>
+            <input id="logo-file" type="file" accept="image/*" hidden>
+          </div>
+        </div>
+        <div><button class="btn btn-primary" type="submit">Save settings</button></div>
+      </form></section>
+      <section class="panel"><div class="panel-head"><h2>Data backup</h2></div><div class="panel-body stack">
+        <p class="muted">Records are stored in this browser only. Export a backup regularly, and use it to move the data to another computer.</p>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn" data-action="export-db">${icon('download')} Export backup</button>
+          <label class="btn" for="import-file" style="cursor:pointer">${icon('upload')} Import backup</label>
+          <input id="import-file" type="file" accept="application/json,.json" hidden>
+        </div>
+      </div></section>
+    </div>
+    <section class="panel"><div class="panel-head"><h2>Letterhead preview</h2></div><div class="panel-body">
+      <div class="lh">
+        <div class="logo-box" style="--s:76px" id="lh-logo"></div>
+        <div><small>Republic of the Philippines</small><small id="lh-prov"></small><small id="lh-muni"></small><strong id="lh-brgy"></strong><em>OFFICE OF THE PUNONG BARANGAY</em></div>
+        <hr><div class="sig" id="lh-capt"></div>
+      </div>
+    </div></section>
+  </div>`;
+}
+function updateLetterhead() {
+  const f = $('#settings-form'); if (!f) return;
+  const v = n => f.elements[n].value;
+  const n = v('barangay').trim().replace(/^(barangay|brgy\.?)\s+/i, '') || 'Unnamed';
+  const cap = v('captain').trim().replace(/^hon\.?\s+/i, '');
+  const logo = ui.pendingLogo !== undefined ? ui.pendingLogo : S().logo;
+  const initial = (n[0] || 'B').toUpperCase();
+  $('#lh-logo').innerHTML = logo ? `<img class="logo-img" src="${logo}" alt="">` : `<span class="logo-fallback">${esc(initial)}</span>`;
+  $('#logo-well').innerHTML = `<div class="logo-box" style="--s:68px">${logo ? `<img class="logo-img" src="${logo}" alt="">` : `<span class="logo-fallback">${esc(initial)}</span>`}</div>`;
+  $('#lh-prov').textContent = provLine(v('province'));
+  $('#lh-muni').textContent = muniLine(v('municipality'));
+  $('#lh-brgy').textContent = ('BARANGAY ' + n).toUpperCase();
+  $('#lh-capt').innerHTML = `<b>${esc((cap ? 'HON. ' + cap : 'PUNONG BARANGAY').toUpperCase())}</b><br>Punong Barangay`;
+}
+function readLogo(file) {
+  return new Promise((resolve, reject) => {
+    if (!/^image\//.test(file.type)) return reject(new Error('Choose an image file such as PNG or JPG.'));
+    const fr = new FileReader();
+    fr.onerror = () => reject(new Error('That file could not be read.'));
+    fr.onload = () => {
+      const img = new Image();
+      img.onerror = () => reject(new Error('That image could not be opened.'));
+      img.onload = () => {
+        const iw = img.naturalWidth || 360, ih = img.naturalHeight || 360;
+        const k = Math.min(1, 360 / Math.max(iw, ih));
+        const w = Math.max(1, Math.round(iw * k)), h = Math.max(1, Math.round(ih * k));
+        const cv = document.createElement('canvas'); cv.width = w; cv.height = h;
+        cv.getContext('2d').drawImage(img, 0, 0, w, h);
+        resolve(cv.toDataURL('image/png'));
+      };
+      img.src = fr.result;
+    };
+    fr.readAsDataURL(file);
+  });
+}
+function saveSettings(form) {
+  const g = k => form.elements[k].value.trim();
+  if (!g('barangay')) { toast('Enter the barangay name.', 'error'); form.elements.barangay.focus(); return; }
+  if (!g('captain')) { toast('Enter the name of the Punong Barangay.', 'error'); form.elements.captain.focus(); return; }
+  const prev = Object.assign({}, db.settings);
+  db.settings = Object.assign({}, prev, {
+    barangay: g('barangay'), captain: g('captain'), municipality: g('municipality'), province: g('province'),
+    logo: ui.pendingLogo !== undefined ? ui.pendingLogo : prev.logo
+  });
+  if (!saveDB()) { db.settings = prev; return; }
+  ui.pendingLogo = undefined;
+  render();
+  toast('Settings saved. Name, captain and logo are updated across the system.', 'success');
+}
+
+/* ---------- Sample data ---------- */
+function loadSample() {
+  const rows = [
+    ['Maria', 'Reyes', 'Santos', '', 'Female', '1958-03-12', 'Widowed', 'Purok 1', '12 Mabini St.', 'Retired teacher', '0917 555 0101', '1975', ['indigent']],
+    ['Jose', 'Cruz', 'Dizon', 'Jr.', 'Male', '1990-07-21', 'Married', 'Purok 2', '45 Rizal Ave.', 'Tricycle driver', '0918 555 0102', '1992', ['fourps']],
+    ['Angelica', 'Mendoza', 'Pangilinan', '', 'Female', '1996-11-02', 'Single', 'Purok 3', '8 Sampaguita Lane', 'Call center agent', '0920 555 0103', '2001', []],
+    ['Ramon', 'Garcia', 'Manalo', 'Sr.', 'Male', '1949-01-30', 'Married', 'Purok 1', '3 Bonifacio St.', 'Farmer', '', '1970', ['pwd']],
+    ['Liza', 'Aquino', 'Bautista', '', 'Female', '1985-05-17', 'Separated', 'Purok 2', '27 Luna St.', 'Market vendor', '0927 555 0104', '1999', ['solo', 'fourps']],
+    ['Carlo', 'Santos', 'Villanueva', '', 'Male', '2001-09-09', 'Single', 'Purok 4', '19 Del Pilar St.', 'Student', '0915 555 0105', '2001', []],
+    ['Teresita', 'Lim', 'Navarro', '', 'Female', '1962-12-25', 'Widowed', 'Purok 3', '61 Mabini St.', 'Sari-sari store owner', '0919 555 0106', '1980', []],
+    ['Eduardo', 'Ramos', 'Castillo', '', 'Male', '1978-04-04', 'Married', 'Purok 4', '5 Quezon Ave.', 'Electrician', '0921 555 0107', '2005', []]
+  ];
+  rows.forEach(a => db.residents.push({ id: uid(), createdAt: new Date().toISOString(), first: a[0], middle: a[1], last: a[2], suffix: a[3], sex: a[4], birthdate: a[5], civil: a[6], purok: a[7], address: a[8], occupation: a[9], contact: a[10], since: a[11], sectors: a[12] }));
+  if (saveDB()) { toast('8 sample residents added.', 'success'); render(); }
+}
+
+/* ---------- Backup ---------- */
+function exportDB() {
+  const blob = new Blob([JSON.stringify(db, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `civisync-backup-${new Date().toISOString().slice(0, 10)}.json`;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+  toast('Backup exported.', 'success');
+}
+async function importDB(file) {
+  try {
+    const data = JSON.parse(await file.text());
+    if (!data || !Array.isArray(data.residents) || !Array.isArray(data.certificates)) throw new Error();
+    const ok = await confirmDialog({ title: 'Import backup?', message: `This replaces all current records with ${data.residents.length} residents and ${data.certificates.length} certificates from the backup.`, confirmLabel: 'Import backup' });
+    if (!ok) return;
+    const prev = db; db = data; loadDBNormalize();
+    if (!saveDB()) { db = prev; return; }
+    render(); toast('Backup imported.', 'success');
+  } catch (e) { toast('That file is not a valid CiviSync backup.', 'error'); }
+}
+function loadDBNormalize() {
+  db.settings = Object.assign({}, DEFAULTS.settings, db.settings || {});
+  if (!db.counters || typeof db.counters !== 'object') db.counters = {};
+}
+
+/* =====================================================================
+   Dialog helpers
+   ===================================================================== */
+function openDialog(html, { cls = '' } = {}) {
+  const d = document.createElement('dialog');
+  d.className = 'dlg ' + cls; d.innerHTML = html;
+  document.body.appendChild(d);
+  d.addEventListener('close', () => d.remove());
+  d.addEventListener('click', e => { if (e.target === d) d.close(); });
+  d.showModal();
+  return d;
+}
+function confirmDialog({ title, message, confirmLabel = 'Confirm', danger = false }) {
+  return new Promise(resolve => {
+    const d = openDialog(`<div class="dlg-shell"><div class="dlg-head"><h2>${esc(title)}</h2></div><div class="dlg-body"><p class="muted">${esc(message)}</p></div>
+      <div class="dlg-foot"><button class="btn" data-confirm="0">Cancel</button><button class="btn ${danger ? 'btn-danger' : 'btn-primary'}" data-confirm="1">${esc(confirmLabel)}</button></div></div>`, { cls: 'dlg-sm' });
+    let result = false;
+    d.addEventListener('click', e => { const b = e.target.closest('[data-confirm]'); if (b) { result = b.dataset.confirm === '1'; d.close(); } });
+    d.addEventListener('close', () => resolve(result));
+  });
+}
+
+/* =====================================================================
+   Events (delegated)
+   ===================================================================== */
+document.addEventListener('click', async e => {
+  const el = e.target.closest('[data-action]'); if (!el) return;
+  const act = el.dataset.action, id = el.dataset.id;
+  switch (act) {
+    case 'logout': try { sessionStorage.removeItem(SESSION_KEY); } catch (x) {} ui.navOpen = false; location.hash = ''; render(); break;
+    case 'toggle-pw': {
+      const i = $('#lg-pass'); const show = i.type === 'password';
+      i.type = show ? 'text' : 'password'; el.innerHTML = icon(show ? 'eyeoff' : 'eye'); el.setAttribute('aria-label', show ? 'Hide password' : 'Show password'); break;
+    }
+    case 'toggle-nav': ui.navOpen = true; $('.shell')?.classList.add('nav-open'); break;
+    case 'close-nav': ui.navOpen = false; $('.shell')?.classList.remove('nav-open'); break;
+    case 'close-dialog': el.closest('dialog')?.close(); break;
+    case 'add-resident':
+      if (currentRoute() !== 'residents') location.hash = '#/residents';
+      openResidentForm(); break;
+    case 'edit-resident': openResidentForm(id); break;
+    case 'delete-resident': {
+      const r = db.residents.find(x => x.id === id); if (!r) break;
+      const ok = await confirmDialog({ title: 'Delete resident?', message: `${fullName(r)} will be removed from the records. Certificates already issued stay in the log.`, confirmLabel: 'Delete resident', danger: true });
+      if (ok) { db.residents = db.residents.filter(x => x.id !== id); if (saveDB()) { toast('Resident deleted.', 'success'); render(); } else loadDB(); }
+      break;
+    }
+    case 'issue-for': ui.certResident = id; ui.certQ = ''; if (currentRoute() === 'certificates') render(); else location.hash = '#/certificates'; break;
+    case 'pick-resident': ui.certResident = id; renderPicker(); $('#cert-purpose')?.focus(); break;
+    case 'clear-pick': ui.certResident = null; renderPicker(); setTimeout(() => $('#cert-q')?.focus(), 0); break;
+    case 'view-cert': { const c = db.certificates.find(x => x.id === id); if (c) openCertPreview(c); break; }
+    case 'print-cert': { const c = db.certificates.find(x => x.id === id); if (c) printCertificate(c); break; }
+    case 'load-sample': loadSample(); break;
+    case 'remove-logo': ui.pendingLogo = ''; updateLetterhead(); break;
+    case 'export-db': exportDB(); break;
+  }
+});
+
+document.addEventListener('submit', e => {
+  const f = e.target;
+  if (f.id === 'login-form') {
+    e.preventDefault();
+    const u = f.elements.user.value.trim().toLowerCase(), p = f.elements.pass.value;
+    if (u === ADMIN.user && p === ADMIN.pass) {
+      try { sessionStorage.setItem(SESSION_KEY, '1'); } catch (x) {}
+      location.hash = '#/dashboard'; render();
+    } else {
+      const err = $('#lg-error'); err.textContent = 'Incorrect username or password. Check both and try again.'; err.hidden = false;
+      f.elements.pass.value = ''; f.elements.pass.focus();
+    }
+  } else if (f.id === 'res-form') { e.preventDefault(); saveResident(f); }
+  else if (f.id === 'cert-form') { e.preventDefault(); issueCertificate(); }
+  else if (f.id === 'verify-form') { e.preventDefault(); ui.verifyRef = $('#v-ref').value; renderVerify(); }
+  else if (f.id === 'settings-form') { e.preventDefault(); saveSettings(f); }
+});
+
+document.addEventListener('input', e => {
+  const t = e.target;
+  if (t.id === 'res-q') { ui.resQ = t.value; renderResidentRows(); }
+  else if (t.id === 'res-sector') { ui.resSector = t.value; renderResidentRows(); }
+  else if (t.id === 'cert-q') { ui.certQ = t.value; const list = $('.pick-list'); const pos = t.selectionStart; renderPicker(); const i = $('#cert-q'); if (i) { i.focus(); i.setSelectionRange(pos, pos); } }
+  else if (t.id === 'cert-purpose') ui.certPurpose = t.value;
+  else if (t.id === 'log-q') { ui.logQ = t.value; renderLog(); }
+  else if (t.name === 'ctype') ui.certType = t.value;
+  else if (t.closest && t.closest('#settings-form')) updateLetterhead();
+});
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && e.target.id === 'cert-q') {
+    e.preventDefault();
+    const q = ui.certQ.trim().toLowerCase();
+    const first = sortedResidents().filter(r => !q || (fullName(r) + ' ' + addr(r)).toLowerCase().includes(q))[0];
+    if (first) { ui.certResident = first.id; renderPicker(); $('#cert-purpose')?.focus(); }
+  }
+  if (e.key === 'Escape' && ui.navOpen) { ui.navOpen = false; $('.shell')?.classList.remove('nav-open'); }
+});
+
+document.addEventListener('change', async e => {
+  const t = e.target;
+  if (t.id === 'logo-file' && t.files[0]) {
+    try { ui.pendingLogo = await readLogo(t.files[0]); updateLetterhead(); }
+    catch (err) { toast(err.message, 'error'); }
+    t.value = '';
+  } else if (t.id === 'import-file' && t.files[0]) { await importDB(t.files[0]); t.value = ''; }
+});
+
+window.addEventListener('hashchange', () => { ui.navOpen = false; if (isAuthed()) { render(); window.scrollTo(0, 0); } });
+window.addEventListener('storage', e => { if (e.key === DB_KEY) { loadDB(); render(); } });
+
+/* ---------- Boot ---------- */
+loadDB();
+render();
+</script>
+</body>
+</html>
